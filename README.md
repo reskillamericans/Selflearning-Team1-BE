@@ -1,1 +1,0 @@
-# Self-Learning App - Team 1 BE
