@@ -1,0 +1,28 @@
+{
+  "name": "selflearning-team1-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ana-vela/Selflearning-Team1-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ana-vela/Selflearning-Team1-BE/issues"
+  },
+  "homepage": "https://github.com/ana-vela/Selflearning-Team1-BE#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.14"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
