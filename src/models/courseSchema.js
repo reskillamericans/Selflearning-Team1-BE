@@ -10,7 +10,7 @@ const coursesSchema = new Schema({
         enum: ["ux/ui design", "computer science", "database management", "frontend development", "information systems"]
     },
     url: {
-        type: Buffer,
+        type: String,
         required: true
     }
 })
