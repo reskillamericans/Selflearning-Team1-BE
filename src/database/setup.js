@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const connectionString = 'mongodb://localhost:27017/tech4u'
+const connectionString = process.env.DB_URL
 
 
  module.exports = () =>  { mongoose.connect(connectionString,
