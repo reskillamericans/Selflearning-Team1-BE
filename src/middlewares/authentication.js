@@ -1,4 +1,3 @@
-const { restart } = require("nodemon");
 const { decodeToken } = require("../services/jwtService");
 
 exports.authenticateUser = (req, res, next) => {
