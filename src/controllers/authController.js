@@ -1,16 +1,24 @@
 const User = require("..models/user");
 const bcrypt = require("bcrypt");
-const { createToken} = require ("../services/jwtService")
+const { createToken} = require ("../services/jwtSer")
 
 exports.registerNewUser = {req, res} => {
+
     User.create(
         firstName: req.body.firstName,
-        lastName: req.body.lastName,    
+        lastName: req.body.lastName,
+        email: req.body.email,
     ),
     (err, newUser) => {
         if (err) {
             return res.status(500).json({err});
-        }
+        } else if (!firstName) {
+            return res.status(400).json({message: 'Please enter your first name'})
+        } else if (!lastName) {
+            return res.status(400).json({message: 'Please enter your last name'})
+        } else if (!email) {
+            return res.status(400).json({message: 'Please enter your email address'})
+        } else {
         bcrypt.genSalt(10, (err, salt) => {
             if(err) {
                 return res.status(500).json({err});
@@ -34,6 +42,6 @@ exports.registerNewUser = {req, res} => {
                     });
                 })
             })
-        } )
+     } )}
     }
 }
