@@ -7,7 +7,7 @@ exports.createToken = (user) => {
     let token = jwt.sign(
       {
         id: user._id,
-        username: user.firstName,
+        firsName: user.firstName,
         lastName: user.lastName,
       },
       secret,

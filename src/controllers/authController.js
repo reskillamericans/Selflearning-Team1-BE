@@ -5,9 +5,7 @@ const { createToken} = require ("../services/jwtService")
 exports.registerNewUser = {req, res} => {
     User.create(
         firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        username: req.body.username,
-    
+        lastName: req.body.lastName,    
     ),
     (err, newUser) => {
         if (err) {
