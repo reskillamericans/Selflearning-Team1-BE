@@ -1,8 +1,8 @@
 const User = require("..models/user");
 const bcrypt = require("bcrypt");
-const { createToken} = require ("../services/jwtService")
+const { createToken } = require ("../services/jwtService")
 
-exports.registerNewUser = {req, res} => {
+exports.registerNewUser = (req, res) => {
 
     if (!req.body.firstName) {
         return res.status(400).json({message: 'Please enter your first name'})
