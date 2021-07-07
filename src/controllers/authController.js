@@ -4,11 +4,11 @@ const { createToken} = require ("../services/jwtService")
 
 exports.registerNewUser = {req, res} => {
 
-    if (!firstName) {
+    if (!req.body.firstName) {
         return res.status(400).json({message: 'Please enter your first name'})
-    } else if (!lastName) {
+    } else if (!req.body.lastName) {
         return res.status(400).json({message: 'Please enter your last name'})
-    } else if (!email) {
+    } else if (!req.body.email) {
         return res.status(400).json({message: 'Please enter your email address'})
     }
 
