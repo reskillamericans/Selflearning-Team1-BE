@@ -11,18 +11,17 @@ exports.registerNewUser = (req, res) => {
 		return res.status(400).json({ message: 'Please enter your email address' });
 	} else if (!req.body.password) {
 		return res.status(400).json({ message: 'Please enter your password' });
+	} else if (!req.body.role) {
+		return res.status(400).json({ message: 'Please select a role' });
 	}
 
 	User.create(
 		{
-			firstName: req.body.firstName,
-			lastName: req.body.lastName,
-			email: req.body.email,
-			password: req.body.password,
+			...req.body
 		},
 		(err, newUser) => {
 			if (err) {
-				return res.status(500).json({ err: 'general error' });
+				return res.status(500).json({ err });
 			} else {
 				bcrypt.genSalt(10, (err, salt) => {
 					if (err) {
