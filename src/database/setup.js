@@ -2,7 +2,7 @@ require("dotenv").config();
 // set up mongoose
 const mongoose = require("mongoose");
 
-const connectionString = "mongodb://localhost:27017/bookstore";
+const connectionString = "mongodb://localhost:27017/selflearning";
 
 // connect application to database
 module.exports = () => {
