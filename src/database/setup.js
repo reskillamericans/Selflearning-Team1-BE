@@ -1,19 +1,20 @@
-require("dotenv").config();
-// set up mongoose
 const mongoose = require("mongoose");
+const connectionString = process.env.DB_URL;
 
-const connectionString = "mongodb://localhost:27017/selflearning";
-
-// connect application to database
-module.exports = () => {
-  mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-  }, (err) => {
-    if (err) return console.log(err);
-    console.log("Database Connection is Successful!");
+module.exports = function () {
+  mongoose.connect(
+    connectionString,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+    },
+    (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("database connection successful");
+      }
     }
   );
-}
+};

@@ -2,7 +2,7 @@
   "name": "selflearning-team1-be",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,9 +18,10 @@
   },
   "homepage": "https://github.com/ana-vela/Selflearning-Team1-BE#readme",
   "dependencies": {
-    "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.14"
   },
   "devDependencies": {
