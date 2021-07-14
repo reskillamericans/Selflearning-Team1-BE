@@ -3,13 +3,13 @@ const controller = require("../controllers/steps.controller");
 const methodNotAllowed = require("../errors/methodNotAllowed");
 
 router
-  .route("/courseId/stepId")
-  .put(controller.addStep)
-  .delete(controller.removeStep)
-  .all(controller.methodNotAllowed);
+  .route("/:courseId/:stepId")
+  // .put(controller.addStep)
+  // .delete(controller.removeStep)
+  .all(methodNotAllowed);
 
 router
-  .route("/stepId")
+  .route("/:stepId")
   .get(controller.read)
   .put(controller.update)
   .delete(controller.destroy)
@@ -21,4 +21,4 @@ router
   .get(controller.list)
   .all(methodNotAllowed);
 
-module.exports = Router;
+module.exports = router;
