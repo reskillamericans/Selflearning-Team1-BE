@@ -1,6 +1,21 @@
 const Step = require("../models/steps.model");
 const Course = require("../models/courses.model")
 
+// Validation Middleware
+
+// Checks if step exists
+function stepExists(req, res, next) {
+  const { stepId } = req.params;
+  Step.findById(stepId, (err, step) => {
+    if (err) return next();
+    if (!step) return next({
+      status: 404,
+      message: `Step id ${req.params.stepId} cannot be found`
+    });
+    res.locals.step = step;
+  });
+}
+
 // Create Step
 function create(req, res, next) {
   Step.create({ ...req.body }, (err, newStep) => {
@@ -11,10 +26,8 @@ function create(req, res, next) {
 
 // Add Step to course
 function addStep(req, res, next) {
-  const { stepId } = req.params;
-  const step = Step.findById(stepId);
-  
-  Course.findByIdAndUpdate(req.params.courseId, { $addToSet: { steps: [step] } }, (err, course) => {
+  const { step } = res.locals;
+  Course.findByIdAndUpdate(req.params.courseId, { $addToSet: { steps: step } }, (err, course) => {
     if (err) return next();
     if (!course) return next({
       status: 404,
@@ -32,9 +45,7 @@ function addStep(req, res, next) {
 
 // Remove step from course
 function removeStep(req, res, next) {
-  const { stepId } = req.params;
-  const step = Step.findById(stepId);
-
+  const { step } = res.locals;
   Course.findByIdAndUpdate(req.params.courseId, { $pull: { steps: step } }, (err, course) => {
     if (err) return next();
     if (!course) return next({
@@ -106,8 +117,8 @@ function destroy(req, res, next) {
 
 module.exports = {
   create,
-  addStep,
-  removeStep,
+  addStep: [stepExists, addStep],
+  removeStep: [stepExists, removeStep],
   list,
   read,
   update,
