@@ -4,8 +4,8 @@ const methodNotAllowed = require("../errors/methodNotAllowed");
 
 router
   .route("/:courseId/:stepId")
-  // .put(controller.addStep)
-  // .delete(controller.removeStep)
+  .put(controller.addStep)
+  .delete(controller.removeStep)
   .all(methodNotAllowed);
 
 router
