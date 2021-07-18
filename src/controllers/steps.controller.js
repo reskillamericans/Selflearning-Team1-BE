@@ -32,18 +32,18 @@ function read(req, res, next) {
 // Update Single Step
 function update(req, res, next) {
   const { name } = req.body;
-  Step.findByIdAndUpdate(req.params.stepId, { name }, (err, step) => {
+  Step.findByIdAndUpdate(req.params.stepId, { name }, { new: true }, (err, step) => {
     if (err) return next();
     if (!step) return next({
       status: 404,
       message: `Step id ${req.params.stepId} cannot be found`
     });
-    step.save((err, savedstep) => {
+    step.save((err, savedStep) => {
       if (err) return next({
         status: 400,
         message: err
       });
-      res.json({ message: "step successfaully updated", savedstep });
+      res.json({ message: "Step successfully updated", savedStep });
     });
   });
 }
