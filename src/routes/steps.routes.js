@@ -4,12 +4,6 @@ const methodNotAllowed = require("../errors/methodNotAllowed");
 const { authenticateUser } = require("../middlewares/authentication");
 
 router
-  .route("/:courseId/:stepId")
-  .put(authenticateUser, controller.addStep)
-  .delete(authenticateUser, controller.removeStep)
-  .all(methodNotAllowed);
-
-router
   .route("/:stepId")
   .get(authenticateUser, controller.read)
   .put(authenticateUser, controller.update)
