@@ -13,6 +13,7 @@ function stepExists(req, res, next) {
       message: `Step id ${req.params.stepId} cannot be found`
     });
     res.locals.step = step;
+    next();
   });
 }
 
@@ -27,7 +28,7 @@ function create(req, res, next) {
 // Add Step to course
 function addStep(req, res, next) {
   const { step } = res.locals;
-  Course.findByIdAndUpdate(req.params.courseId, { $addToSet: { steps: step } }, (err, course) => {
+  Course.findByIdAndUpdate(req.params.courseId, { $addToSet: { steps: step } }, {new: true}, (err, course) => {
     if (err) return next();
     if (!course) return next({
       status: 404,
@@ -46,7 +47,7 @@ function addStep(req, res, next) {
 // Remove step from course
 function removeStep(req, res, next) {
   const { step } = res.locals;
-  Course.findByIdAndUpdate(req.params.courseId, { $pull: { steps: step } }, (err, course) => {
+  Course.findByIdAndUpdate(req.params.courseId, { $pull: { steps: step._id } }, {new: true}, (err, course) => {
     if (err) return next();
     if (!course) return next({
       status: 404,
@@ -58,7 +59,7 @@ function removeStep(req, res, next) {
         message: err
       });
       res.json({ message: "Step removed from course", savedCourse });
-    });
+    })
   });
 }
 
