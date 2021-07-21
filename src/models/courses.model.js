@@ -7,18 +7,18 @@ const courseSchema = new Schema({
     required: true,
     minLength: 2,
   },
-  steps: {
-    type: [Schema.Types.ObjectId],
+  steps: [{
+    type: Schema.Types.ObjectId,
     ref: "Step",
-  },
-  mentors: {
-    type: [Schema.Types.ObjectId],
+  }],
+  mentors: [{
+    type: Schema.Types.ObjectId,
     ref: "User",
-  },
-  students: {
-    type: [Schema.Types.ObjectId],
+  }],
+  students: [{
+    type: Schema.Types.ObjectId,
     ref: "User",
-  },
+  }],
 });
 
 const Course = mongoose.model("Course", courseSchema);
