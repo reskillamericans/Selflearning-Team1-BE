@@ -14,17 +14,16 @@ const userSchema = new Schema( {
         type: String,
         required: true,
         unique: true
-    }, password: {
+    },
+    password: {
         type: String,
         required: true
     },
     role: {
         type: String,
         required: true,
-        enum: ['student', 'mentor'],
-        
-    }
-    
+        enum: ['student', 'mentor'], 
+    },
 });
 
 module.exports = mongoose.model('User', userSchema)
