@@ -30,6 +30,10 @@ function create(req, res, next) {
 // Update a single course (only updates course 'title')
 function update(req, res, next) {
   const { title } = req.body;
+  if (!title) return next({
+    status: 400,
+    message: "Title is required."
+  });
   Course.findByIdAndUpdate(req.params.courseId, { title }, { new: true }, (err, course) => {
     if (err) return next(err);
     if (!course) return next({
