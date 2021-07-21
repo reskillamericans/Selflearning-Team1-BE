@@ -32,6 +32,10 @@ function read(req, res, next) {
 // Update Single Step
 function update(req, res, next) {
   const { name } = req.body;
+  if (!name) return next({
+    status: 400,
+    message: "Name is required."
+  });
   Step.findByIdAndUpdate(req.params.stepId, { name }, { new: true }, (err, step) => {
     if (err) return next();
     if (!step) return next({
