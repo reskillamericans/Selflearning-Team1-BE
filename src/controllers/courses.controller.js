@@ -27,6 +27,27 @@ function create(req, res, next) {
   });
 }
 
+// Fetch all courses
+function list(req, res, next) {
+  Course.find({}, (err, courses) => {
+    if (err) return next(err);
+    res.status(200).json({ courses });
+  })
+}
+
+// Fetch Single Course
+function read(req, res, next) {
+  const courseId = req.params.courseId;
+  Course.findById(courseId, (err, course) => {
+    if (err) return next();
+    if (!course) return next({
+      status: 404,
+      message: `Couses id ${courseId} cannot be found`
+    });
+    res.json({ course });
+  });
+}
+
 // Update a single course (only updates course 'title')
 function update(req, res, next) {
   const { title } = req.body;
@@ -88,9 +109,24 @@ function removeStep(req, res, next) {
   });
 }
 
+// Delete Single Course
+function destroy(req, res, next) {
+  Course.findByIdAndDelete(req.params.courseId, (err, course) => {
+    if (err) return next();
+    if (!course) return next({
+      status: 400,
+      message: `Course id ${req.params.courseId} cannot be found`
+    });
+    res.json({ message: "Course deleted successfully" });
+  });
+}
+
 module.exports = {
   create,
+  list,
+  read,
   update,
   addStep: [stepExists, addStep],
   removeStep: [stepExists, removeStep],
+  destroy,
 }
