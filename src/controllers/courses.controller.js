@@ -29,22 +29,28 @@ function create(req, res, next) {
 
 // Fetch all courses
 function list(req, res, next) {
-  Course.find({}, (err, courses) => {
-    if (err) return next(err);
-    res.status(200).json({ courses });
-  })
+  Course
+    .find({})
+    .populate("steps")
+    .exec((err, courses) => {
+      if (err) return next(err);
+      res.status(200).json({ courses });
+    });
 }
 
 // Fetch Single Course
 function read(req, res, next) {
   const courseId = req.params.courseId;
-  Course.findById(courseId, (err, course) => {
-    if (err) return next();
-    if (!course) return next({
-      status: 404,
-      message: `Couses id ${courseId} cannot be found`
-    });
-    res.json({ course });
+  Course
+    .findById(courseId)
+    .populate("steps")
+    .exec((err, course) => {
+      if (err) return next();
+      if (!course) return next({
+        status: 404,
+        message: `Couses id ${courseId} cannot be found`
+      });
+      res.json({ course });
   });
 }
 
