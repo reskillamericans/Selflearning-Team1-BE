@@ -1,5 +1,6 @@
 const { decodeToken } = require("../services/jwtService");
 
+
 exports.authenticateUser = (req, res, next) => {
   if (!req.headers.authorization) {
     return res.status(401).json({ message: "authorization required" });
@@ -14,7 +15,7 @@ exports.authenticateUser = (req, res, next) => {
   let token = splittedHeader[1];
 
   let decodedToken = decodeToken(token);
-
+  console.log( decodedToken)
   if (!decodedToken) {
     return res
       .status(401)
@@ -23,3 +24,14 @@ exports.authenticateUser = (req, res, next) => {
   req.user = decodedToken;
   next();
 };
+
+exports.isAuthenticated = (req,res,next) =>{
+  if (!req.headers.authorization) {
+    return res.status(401).json({ message: "authorization required" });
+  }
+  if ( !req.user){
+    return res.status(401).json({ message: "authorization required" });
+
+  }
+  next();
+}
