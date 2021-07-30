@@ -9,12 +9,12 @@ router
   .all(methodNotAllowed);
 
 router
-  .route("/users/:Id")
+  .route("/users/:id")
   .get(authenticateUser)
   .all(methodNotAllowed);
 
 router
-  .route("/users/:Id")
+  .route("/users/:id")
   .post(authenticateUser)
   .all(methodNotAllowed);
 
