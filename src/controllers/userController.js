@@ -4,7 +4,7 @@ const Course = require("../models/courses.model");
 
 
 //Fetch User
-function fetchUser(req, res) {
+function fetchUsers(req, res) {
     User.find({}, (err, users) => {
       if(err) {
           return res.status(500).json({ message: err})
@@ -16,10 +16,6 @@ function fetchUser(req, res) {
  
   
 
-//Fetch User by Course
-function userByCourse(req, res){
-  
-}
 
 //Fetch Single User
 function userbyId(req, res){
