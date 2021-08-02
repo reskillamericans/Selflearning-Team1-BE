@@ -11,12 +11,15 @@ router
 
 router
   .route("/:courseId")
+  .get(authenticateUser, controller.read)
   .put(authenticateUser, controller.update)
+  .delete(authenticateUser, controller.destroy)
   .all(methodNotAllowed);
 
 router
   .route("/")
   .post(authenticateUser, controller.create)
+  .get(authenticateUser, controller.list)
   .all(methodNotAllowed);
 
 module.exports = router;
