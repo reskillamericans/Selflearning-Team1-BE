@@ -7,7 +7,7 @@ const dbSetup = require("./database/setup");
 const authRoutes = require("./routes/authRoutes");
 const coursesRoutes = require("./routes/courses.routes");
 const stepsRoutes = require("./routes/steps.routes");
-const userRoutes = require("./routes/usersRoutes");
+const usersRoutes = require("./routes/usersRoutes");
 const notFound = require("./errors/notFound");
 const errorHandler = require("./errors/errorHandler");
 
