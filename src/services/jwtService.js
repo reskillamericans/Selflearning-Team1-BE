@@ -4,11 +4,14 @@ const expiry = Number(process.env.TOKEN_EXPIRY);
 
 exports.createToken = (user) => {
   try {
+    // add email and role
     let token = jwt.sign(
       {
         id: user._id,
         firstName: user.firstName,
         lastName: user.lastName,
+        email: user.email,
+        role: user.role,
       },
       secret,
       { expiresIn: expiry }

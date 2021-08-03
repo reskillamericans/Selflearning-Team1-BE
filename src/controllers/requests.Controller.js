@@ -28,9 +28,17 @@ exports.create = async (req, res, next) => {
 
 exports.fetch = async (req, res, next) => {
   try {
-    // check if seach is present or empty; if so return all requests
-    if (!("search" in req.query) || !req.query.search) {
-      const data = await Request.find();
+    const isStudent = req.user.role === "student";
+    let data;
+    // if request doesn't contain search query, retrun all eligible results
+    if (!("search" in req.query)) {
+      // if user is student return only student's requests otherwise return all
+      if (isStudent) {
+        data = await Request.find({ student: req.user.id });
+      } else {
+        data = await Request.find({});
+      }
+
       return res.status(200).json({
         status: "success",
         results: data.length,
@@ -38,41 +46,21 @@ exports.fetch = async (req, res, next) => {
       });
     }
 
-    // check if search criteria is valid & if search id is provided
-    const search = req.query.search;
-    const id = req.body.id;
-    if (
-      !id ||
-      (search !== "course" && search !== "step" && search !== "student" && search !== "mentor")
-    ) {
+    // check if both search and id are included
+    if (!("id" in req.query) || !req.query.search) {
       res.status(400);
-      return clientError(new Error("Invalid search criteria or missing id"), req, res);
+      return clientError(new Error("Search requires valid criteria and Id"), req, res);
+    }
+    // build search object based on user query and user role
+    let searchOptions = {};
+    if (isStudent) {
+      searchOptions.student = req.user.id;
+      searchOptions[req.query.search] = req.query.id;
+    } else {
+      searchOptions[req.query.search] = req.query.id;
     }
 
-    // search by course
-    const data = [];
-    if (search === "course") {
-      const results = await Request.find({ course: id });
-      data.push(...results);
-    }
-
-    // search by step
-    if (search === "step") {
-      const results = await Request.find({ step: id });
-      data.push(...results);
-    }
-
-    // search by student
-    if (search === "student") {
-      const results = await Request.find({ student: id });
-      data.push(...results);
-    }
-
-    // search by mentor
-    if (search === "mentor") {
-      const results = await Request.find({ mentor: id });
-      data.push(...results);
-    }
+    data = await Request.find(searchOptions);
 
     res.status(200).json({
       status: "success",
@@ -86,20 +74,25 @@ exports.fetch = async (req, res, next) => {
 
 exports.fetchSingle = async (req, res, next) => {
   try {
-    const data = await Request.findById(req.params.id);
-    if (data) {
-      if (data.student.toString() !== req.user.id) {
-        res.status(400);
-        return clientError(new Error("You are not authorized to view this resource"), req, res);
-      }
-      return res.status(200).json({
-        status: "success",
-        data,
-      });
-    }
+    const isStudent = req.user.role === "student";
 
-    res.status(404);
-    clientError(new Error("Request not found"), req, res);
+    const data = await Request.findById(req.params.id);
+    const dataOwner = data?.student;
+
+    if (isStudent) {
+      if (dataOwner.toString() !== req.user.id) {
+        res.status(401);
+        return clientError(
+          new Error("You do not have authorization for the requested action"),
+          req,
+          res
+        );
+      }
+    }
+    res.status(200).json({
+      status: "success",
+      data,
+    });
   } catch (err) {
     next(err);
   }
@@ -107,42 +100,54 @@ exports.fetchSingle = async (req, res, next) => {
 
 exports.toggleStatus = async (req, res, next) => {
   try {
-    const data = await Request.findById(req.params.id);
-    if (data) {
-      if (data.student.toString() !== req.user.id) {
-        res.status(400);
-        return clientError(new Error("You are not authorized to view this resource"), req, res);
-      }
+    const isStudent = req.user.role === "student";
+    const request = await Request.findById(req.params.id);
+    const isOwner = req.user.id === request?.student.toString();
 
-      // student has option to toggle between open and closed.
-      // later only admin or mentor can toggle to accepted or closed
-      if (data.status === "pending") {
-        data.status = "closed";
-      } else {
-        data.status = "pending";
-      }
-      await data.save();
+    // check if status valid
+    const status = req.body.status;
+    if (status !== "accepted" && status !== "closed" && status !== "pending") {
+      res.status(404);
+      return clientError(new Error("Invalid status"), req, res);
+    }
 
+    // check validity of request baed on user and status
+    if (!isStudent && status !== "closed") {
+      request.status = status;
+      request.save();
       return res.status(204).json({
         status: "success",
-        data,
+        request,
       });
     }
 
-    res.status(404);
-    clientError(new Error("Request not found"), req, res);
+    if (isStudent && isOwner && status !== "accepted") {
+      request.status = status;
+      request.save();
+      return res.status(204).json({
+        status: "success",
+        request,
+      });
+    }
+
+    res.status(400).json({
+      status: "fail",
+      message: "Invalid request",
+    });
   } catch (err) {
     next(err);
   }
 };
 
+// only student who created can delete
 exports.delete = async (req, res, next) => {
   try {
     const data = await Request.findById(req.params.id);
     if (data) {
+      // check if user attempting to delete is owner of data
       if (data.student.toString() !== req.user.id) {
-        res.status(400);
-        return clientError(new Error("You are not authorized to view this resource"), req, res);
+        res.status(401);
+        return clientError(new Error("Action not authorized"), req, res);
       }
 
       await data.remove();
