@@ -1,9 +1,17 @@
 const Step = require("../models/steps.model");
+const Course = require("../models/courses.model");
 
 // Create Step
 function create(req, res, next) {
   Step.create({ ...req.body }, (err, newStep) => {
     if (err) return next(err);
+    Course.findById(req.body.course, (err, course) => {
+      if (err) return next(err);
+      course.steps.push(newStep._id);
+      course.save((err, data) => {
+        if (err) return next(err);
+      });
+    });
     res.status(201).json({ message: "New step created", newStep });
   });
 }
@@ -21,10 +29,11 @@ function read(req, res, next) {
   const stepId = req.params.stepId;
   Step.findById(stepId, (err, step) => {
     if (err) return next();
-    if (!step) return next({
-      status: 404,
-      message: `Step id ${stepId} cannot be found`
-    });
+    if (!step)
+      return next({
+        status: 404,
+        message: `Step id ${stepId} cannot be found`,
+      });
     res.json({ step });
   });
 }
@@ -32,21 +41,24 @@ function read(req, res, next) {
 // Update Single Step
 function update(req, res, next) {
   const { name } = req.body;
-  if (!name) return next({
-    status: 400,
-    message: "Name is required."
-  });
+  if (!name)
+    return next({
+      status: 400,
+      message: "Name is required.",
+    });
   Step.findByIdAndUpdate(req.params.stepId, { name }, { new: true }, (err, step) => {
     if (err) return next();
-    if (!step) return next({
-      status: 404,
-      message: `Step id ${req.params.stepId} cannot be found`
-    });
-    step.save((err, savedStep) => {
-      if (err) return next({
-        status: 400,
-        message: err
+    if (!step)
+      return next({
+        status: 404,
+        message: `Step id ${req.params.stepId} cannot be found`,
       });
+    step.save((err, savedStep) => {
+      if (err)
+        return next({
+          status: 400,
+          message: err,
+        });
       res.json({ message: "Step successfully updated", savedStep });
     });
   });
@@ -56,14 +68,14 @@ function update(req, res, next) {
 function destroy(req, res, next) {
   Step.findByIdAndDelete(req.params.stepId, (err, step) => {
     if (err) return next();
-    if (!step) return next({
-      status: 400,
-      message: `Step id ${req.params.stepId} cannot be found`
-    });
+    if (!step)
+      return next({
+        status: 400,
+        message: `Step id ${req.params.stepId} cannot be found`,
+      });
     res.json({ message: "Step deleted successfully" });
   });
 }
-
 
 module.exports = {
   create,
@@ -71,4 +83,4 @@ module.exports = {
   read,
   update,
   destroy,
-}
+};
