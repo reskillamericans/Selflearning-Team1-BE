@@ -14,7 +14,7 @@ router
 router
   .route("/:id")
   .all(authenticateUser)
-  .get(requestController.fetchSIngle)
+  .get(requestController.fetchSingle)
   .patch(requestController.toggleStatus)
   .delete(requestController.delete)
   .all(methodNotAllowed);

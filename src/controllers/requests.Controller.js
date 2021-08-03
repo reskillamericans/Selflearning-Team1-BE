@@ -84,7 +84,7 @@ exports.fetch = async (req, res, next) => {
   }
 };
 
-exports.fetchSIngle = async (req, res, next) => {
+exports.fetchSingle = async (req, res, next) => {
   try {
     const data = await Request.findById(req.params.id);
     if (data) {
