@@ -35,9 +35,8 @@ function fetchUsers(req, res){
 
 
 function fetchUsersProfile(req, res){
-    if(req.user){
-        let id = req.body.id
-    User.findByIdAndUpdate(id, (err, user) => {
+    let { id } = req.user
+    User.findById(id, (err, user) => {
         if(err) {
           return res.status(500).json({ message: err})
       }
@@ -49,7 +48,7 @@ function fetchUsersProfile(req, res){
       }
     
       })
-    }
+    
     
 }
 

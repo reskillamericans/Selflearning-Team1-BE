@@ -6,20 +6,20 @@ const { authenticateUser } = require("../middlewares/authentication");
 
 router
   .route("/")
-  .get(authenticateUser, controller.fetchUsers )
+  .get( controller.fetchUsers )
   .all(methodNotAllowed);
 
-
+  router
+  .route("/profile")
+  .get(authenticateUser, controller.fetchUsersProfile)
+  .all(methodNotAllowed);
 
 router
   .route("/:id")
-  .get(authenticateUser, controller.fetchUserById)
+  .get( controller.fetchUserById)
   .all(methodNotAllowed);
 
 
-  router
-  .route("/:id")
-  .get(authenticateUser, controller.fetchUsersProfile)
-  .all(methodNotAllowed);
+ 
 
 module.exports = router;
