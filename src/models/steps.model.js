@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const stepSchema = new Schema({
   course: {
     type: Schema.Types.ObjectId,
-    ref: 'Course' 
+    required: true,
+    ref: "Course",
   },
   name: {
     type: String,
@@ -12,7 +13,6 @@ const stepSchema = new Schema({
     minLength: 2,
   },
 });
-
 
 const Step = mongoose.model("Step", stepSchema);
 
