@@ -37,12 +37,14 @@ function fetchUsers(req, res){
 function fetchUsersProfile(req, res){
     let { id } = req.user
     let currentUser = {
+        id: req.user.id,
         firstName: req.user.firstName,
         lastName: req.user.lastName,
-        email: req.body.email,
-        role: req.body.role
+        email: req.user.email,
+        role: req.user.role
     }
-   
+   if(id == currentUser.id){
+       console.log(id)
     User.findById(id, (err, user) => {
         if(err) {
           return res.status(500).json({ message: err})
@@ -55,6 +57,8 @@ function fetchUsersProfile(req, res){
       }
     
       })
+    }
+    
     
     
     
