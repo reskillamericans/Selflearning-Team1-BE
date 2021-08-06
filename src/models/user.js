@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const saltRounds = 12;
 const { Schema } = mongoose;
 
@@ -31,6 +32,8 @@ const userSchema = new Schema({
       message: `Role must be either 'student' or 'mentor'`,
     },
   },
+  passwordResetToken: String,
+  passwordResetTokenExpiration: Date,
 });
 
 userSchema.pre('save', function (next) {
@@ -44,5 +47,13 @@ userSchema.pre('save', function (next) {
     next();
   });
 });
+
+userSchema.methods.createResetToken = function () {
+  const token = crypto.randomBytes(32).toString('hex');
+  const encryptedToken = crypto.createHash('sha256').update(token).digest('hex');
+  this.passwordResetToken = encryptedToken;
+  this.passwordResetTokenExpiration = Date.now() + 600000;
+  return token;
+};
 
 module.exports = mongoose.model('User', userSchema);
