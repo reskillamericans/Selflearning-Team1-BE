@@ -18,5 +18,9 @@ module.exports = [
       if (val !== req.body.password) throw new Error('Passwords do not match');
       return true;
     }),
-  body('role').not().isEmpty().withMessage('Please indicate whether you are a student or mentor'),
+  body('role')
+    .not()
+    .isEmpty()
+    .isIn(['student', 'mentor'])
+    .withMessage(`Invalid role. Select either 'student' or 'mentor'`),
 ];
