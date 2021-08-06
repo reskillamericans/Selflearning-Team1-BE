@@ -23,20 +23,13 @@ const userSchema = new Schema({
     required: true,
     minLength: [6, 'Password must be at least 6 characters long'],
   },
-  confirmPassword: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (el) {
-        return el === this.password;
-      },
-      message: 'The passwords do not match',
-    },
-  },
   role: {
     type: String,
     required: true,
-    enum: ['student', 'mentor'],
+    enum: {
+      values: ['student', 'mentor'],
+      message: `Role must be either 'student' or 'mentor'`,
+    },
   },
 });
 
