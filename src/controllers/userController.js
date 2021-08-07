@@ -35,33 +35,18 @@ function fetchUsers(req, res){
 
 
 function fetchUsersProfile(req, res){
-    let { id } = req.user
-    let currentUser = {
-        id: req.user.id,
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        email: req.user.email,
-        role: req.user.role
-    }
-   if(id == currentUser.id){
-       console.log(id)
-    User.findById(id, (err, user) => {
-        if(err) {
+    let  { id } = req.user
+    User.findById(id, '-password -__v', (err, user) => {
+      if(err) {
           return res.status(500).json({ message: err})
       }
       else if(!user){
           return res.status(404).json({ message: "user not found"})
       }
       else {
-          return res.status(200).json({ currentUser })
+        return res.status(200).json({ user })
       }
-    
-      })
-    }
-    
-    
-    
-    
+    })  
 }
 
 module.exports = { fetchUsers, fetchUserById, fetchUsersProfile }
