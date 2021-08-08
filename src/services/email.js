@@ -22,7 +22,7 @@ const sendEmail = async (options) => {
     // 3 ) Send the email
     await transporter.sendMail(mailOptions);
   } catch (err) {
-    throw err;
+    throw new Error('Email not sent');
   }
 };
 
