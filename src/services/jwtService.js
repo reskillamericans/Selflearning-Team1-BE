@@ -1,11 +1,10 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const secret = process.env.JWT_SECRET;
 const expiry = Number(process.env.TOKEN_EXPIRY);
 
 exports.createToken = (user) => {
   try {
-    // add email and role
-    let token = jwt.sign(
+    const token = jwt.sign(
       {
         id: user._id,
         firstName: user.firstName,
@@ -24,7 +23,7 @@ exports.createToken = (user) => {
 
 exports.decodeToken = (token) => {
   try {
-    let decodedToken = jwt.verify(token, secret);
+    const decodedToken = jwt.verify(token, secret);
     return decodedToken;
   } catch (error) {
     return null;
