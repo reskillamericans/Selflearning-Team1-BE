@@ -37,23 +37,16 @@ exports.forgotPassword = async (req, res, next) => {
     const resetToken = user.createResetToken();
     await user.save();
 
-    // send token to user's email
+    // send token to user's email with reset link
     const resetURL = `${req.protocol}://${req.get('host')}/auth/resetPassword/${resetToken}`;
 
     const message = `Submit password and confirmation password here ${resetURL}.\nIf you didn't submit this request, please ignore.`;
 
-    try {
-      await sendEmail({
-        email: req.body.email,
-        subject: 'Your password reset token',
-        message,
-      });
-    } catch (err) {
-      user.passwordResetToken = undefined;
-      user.passwordResetTokenExpiration = undefined;
-      await user.save();
-      return res.status(500).json({ status: 'fail', message: 'Email not sent', err });
-    }
+    await sendEmail({
+      email: req.body.email,
+      subject: 'Your password reset token',
+      message,
+    });
 
     res.status(200).json({ status: 'success', message: 'Email sent' });
   } catch (err) {
@@ -99,9 +92,6 @@ exports.resetPassword = async (req, res, next) => {
 
     const newToken = createToken(user);
 
-    // 2 ) If token hasn't expired and there is a user, set the password
-    // 3 ) Update changedPasswordAt property for user
-    // 4 ) Log user in, send new JWT
     res.status(201).json({
       status: 'success',
       message: 'Password sucessfully updated',
