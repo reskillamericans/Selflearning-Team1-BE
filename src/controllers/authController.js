@@ -54,3 +54,51 @@ exports.registerNewUser = (req, res) => {
 		}
 	);
 };
+
+exports.login = async (req, res) => {
+	try {
+		const prevUser = await user.findOne({ username: req.body.username });
+
+		if (prevUser) {
+			const prevUserEmail = await bcrypt.compare(
+				req.body.email,
+				prevUser.email
+			);
+
+			if (prevUserEmail && req.body.email === prevUser.email) {
+				const token = jwt.sign(
+					{
+						id: prevUser.id,
+						username: prevUser.username,
+						firstName: prevUser.firstName,
+						lastName: prevUser.lastName,
+						role: prevUser.role,
+					},
+					secret,
+					{ expiresIn: expiry }
+				);
+
+				res.status(200).json({
+					status: 'success',
+					message: 'Login successful',
+					token,
+				});
+			} else {
+				res.status(401).json({
+					status: 'unauthorized',
+					message: 'authentication error',
+				});
+			}
+		} else {
+			res.status(400).json({
+				status: 'bad request',
+				message: 'Username not found!',
+			});
+		}
+	} catch (err) {
+		res.status(500).json({
+			status: 'internal server error',
+			message: err,
+		});
+	}
+};
