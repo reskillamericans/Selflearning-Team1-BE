@@ -1,58 +1,105 @@
 const User = require('../models/user');
-const bcrypt = require('bcrypt');
 const { createToken } = require('../services/jwtService');
+const sendEmail = require('../services/email');
+const crypto = require('crypto');
 
-exports.registerNewUser = (req, res) => {
-	if (!req.body.firstName) {
-		return res.status(400).json({ message: 'Please enter your first name' });
-	} else if (!req.body.lastName) {
-		return res.status(400).json({ message: 'Please enter your last name' });
-	} else if (!req.body.email) {
-		return res.status(400).json({ message: 'Please enter your email address' });
-	} else if (!req.body.password) {
-		return res.status(400).json({ message: 'Please enter your password' });
-	} else if (!req.body.role) {
-		return res.status(400).json({ message: 'Please select a role' });
-	}
+exports.signup = async (req, res) => {
+  try {
+    const exists = await User.findOne({ email: req.body.email });
+    if (exists) {
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'Email is already registered, please log in' });
+    }
+    const user = await User.create({ ...req.body });
+    const token = createToken(user);
+    res.status(201).json({
+      status: 'success',
+      token,
+      data: user,
+    });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: err.message });
+  }
+};
 
-	User.create(
-		{
-			...req.body
-		},
-		(err, newUser) => {
-			if (err) {
-				return res.status(500).json({ err });
-			} else {
-				bcrypt.genSalt(10, (err, salt) => {
-					if (err) {
-						return res.status(500).json({ err });
-					}
-					bcrypt.hash(req.body.password, salt, (err, hashedPassword) => {
-						if (err) {
-							return res.status(500).json({ err });
-						}
-						newUser.password = hashedPassword;
-						newUser.save((err, savedUser) => {
-							if (err) {
-								return res.status(500).json({ err });
-							}
-							let token = createToken(newUser);
-							if (!token) {
-								return res.status(500).json({
-									message: 'Apologies, we cannot authenticate you. Please login',
-								});
-							}
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    // check for valid email
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: 'fail', message: 'No users were found with this email' });
+    }
 
-							return res.status(200).json({
-								message: 'Success! You are now registered.',
-								token,
-							});
-						});
-					});
-				});
-			}
-		}
-	);
+    // create temp token
+    const resetToken = user.createResetToken();
+    await user.save();
+
+    // send token to user's email with reset link
+    const resetURL = `${req.protocol}://${req.get('host')}/auth/resetPassword/${resetToken}`;
+
+    const message = `Submit password and confirmation password here ${resetURL}.\nIf you didn't submit this request, please ignore.`;
+
+    await sendEmail({
+      email: req.body.email,
+      subject: 'Your password reset token',
+      message,
+    });
+
+    res.status(200).json({ status: 'success', message: 'Email sent' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const token = req.params.token;
+
+    const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+      passwordResetToken,
+      passwordResetTokenExpiration: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Invalid reset token',
+      });
+    }
+
+    if (!req.body.password) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Please enter a password at least 6 characters long',
+      });
+    }
+
+    if (req.body.password !== req.body.confirmPassword) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'The passwords do not match',
+      });
+    }
+
+    user.password = req.body.password;
+    user.passwordResetToken = undefined;
+    user.passwordResetTokenExpiration = undefined;
+    await user.save();
+
+    const newToken = createToken(user);
+
+    res.status(201).json({
+      status: 'success',
+      message: 'Password sucessfully updated',
+      data: { user, newToken },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 exports.login = async (req, res) => {

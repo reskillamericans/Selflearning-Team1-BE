@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
-const connectionString = process.env.DB_URL;
+const connectionString = process.env.DB_URL;  
+ 
 
 
 module.exports = function () {
@@ -9,6 +10,7 @@ module.exports = function () {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
+      useCreateIndex: true,
     },
     (err) => {
       if (err) {
