@@ -1,6 +1,5 @@
 const { decodeToken } = require("../services/jwtService");
 
-
 exports.authenticateUser = (req, res, next) => {
   if (!req.headers.authorization) {
     return res.status(401).json({ message: "authorization required" });
@@ -8,7 +7,7 @@ exports.authenticateUser = (req, res, next) => {
   let splittedHeader = req.headers.authorization.split(" ");
 
   if (splittedHeader[0] != "Bearer") {
-    return res
+    return re
       .status(401)
       .json({ message: "authorization format is Bearer <token>" });
   }

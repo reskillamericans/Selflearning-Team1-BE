@@ -57,26 +57,16 @@ exports.registerNewUser = (req, res) => {
 
 exports.login = async (req, res) => {
 	try {
-		const prevUser = await user.findOne({ username: req.body.username });
-
+		const prevUser = await User.findOne({ email: req.body.email});
+		console.log(prevUser)
 		if (prevUser) {
-			const prevUserEmail = await bcrypt.compare(
-				req.body.email,
-				prevUser.email
+			const passMatch= await bcrypt.compare(
+				req.body.password,
+				prevUser.password
 			);
 
-			if (prevUserEmail && req.body.email === prevUser.email) {
-				const token = jwt.sign(
-					{
-						id: prevUser.id,
-						username: prevUser.username,
-						firstName: prevUser.firstName,
-						lastName: prevUser.lastName,
-						role: prevUser.role,
-					},
-					secret,
-					{ expiresIn: expiry }
-				);
+			if (passMatch && req.body.email === prevUser.email) {
+				const token = createToken(prevUser)
 
 				res.status(200).json({
 					status: 'success',
@@ -96,6 +86,7 @@ exports.login = async (req, res) => {
 			});
 		}
 	} catch (err) {
+		console.log(err)
 		res.status(500).json({
 			status: 'internal server error',
 			message: err,

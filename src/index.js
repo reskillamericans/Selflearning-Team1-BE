@@ -18,6 +18,7 @@ app.use("/auth", authRoutes);
 app.use("/courses", coursesRoutes);
 app.use("/steps", stepsRoutes);
 
+
 // error handler middleware
 app.use(notFound);
 app.use(errorHandler);
