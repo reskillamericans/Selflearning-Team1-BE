@@ -2,7 +2,7 @@ const User = require('../models/user');
 const { createToken } = require('../services/jwtService');
 const sendEmail = require('../services/email');
 const crypto = require('crypto');
-
+const bcrypt = require('bcrypt')
 exports.signup = async (req, res) => {
   try {
     const exists = await User.findOne({ email: req.body.email });
