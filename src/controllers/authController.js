@@ -112,7 +112,7 @@ exports.login = async (req, res) => {
 				prevUser.password
 			);
 
-			if (passMatch && req.body.email === prevUser.email) {
+			if (passMatch) {
 				const token = createToken(prevUser)
 
 				res.status(200).json({
@@ -123,13 +123,13 @@ exports.login = async (req, res) => {
 			} else {
 				res.status(401).json({
 					status: 'unauthorized',
-					message: 'authentication error',
+					message: 'Incorrect Password!',
 				});
 			}
 		} else {
 			res.status(400).json({
 				status: 'bad request',
-				message: 'Username not found!',
+				message: 'Email not found',
 			});
 		}
 	} catch (err) {
