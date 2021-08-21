@@ -2,7 +2,7 @@ const User = require('../models/user');
 const { createToken } = require('../services/jwtService');
 const sendEmail = require('../services/email');
 const crypto = require('crypto');
-
+const bcrypt = require('bcrypt')
 exports.signup = async (req, res) => {
   try {
     const exists = await User.findOne({ email: req.body.email });
@@ -100,4 +100,43 @@ exports.resetPassword = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+exports.login = async (req, res) => {
+	try {
+		const prevUser = await User.findOne({ email: req.body.email});
+		console.log(prevUser)
+		if (prevUser) {
+			const passMatch= await bcrypt.compare(
+				req.body.password,
+				prevUser.password
+			);
+
+			if (passMatch) {
+				const token = createToken(prevUser)
+
+				res.status(200).json({
+					status: 'success',
+					message: 'Login successful',
+					token,
+				});
+			} else {
+				res.status(401).json({
+					status: 'unauthorized',
+					message: 'Incorrect Password!',
+				});
+			}
+		} else {
+			res.status(400).json({
+				status: 'bad request',
+				message: 'Email not found',
+			});
+		}
+	} catch (err) {
+		console.log(err)
+		res.status(500).json({
+			status: 'internal server error',
+			message: err,
+		});
+	}
 };

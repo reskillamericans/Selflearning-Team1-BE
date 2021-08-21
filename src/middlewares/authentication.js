@@ -14,7 +14,7 @@ exports.authenticateUser = (req, res, next) => {
   let token = splittedHeader[1];
 
   let decodedToken = decodeToken(token);
-
+  console.log( decodedToken)
   if (!decodedToken) {
     return res
       .status(401)
